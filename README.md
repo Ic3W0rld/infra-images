@@ -1,42 +1,63 @@
 # infra-images
 
-Container image definitions for infrastructure services. Images are built automatically on push, published to [GitHub Container Registry (GHCR)](https://ghcr.io), and signed with [Cosign](https://docs.sigstore.dev/cosign/overview/) for supply chain security.
+Mirrors all container images used by the Kubernetes cluster to [GitHub Container Registry (GHCR)](https://ghcr.io/ic3w0rld).
 
-## Registry
+Images are mirrored from their upstream registries (quay.io, docker.io, registry.k8s.io, …) as **linux/amd64** using `skopeo`.
+
+## How it works
+
+1. `mirrors.yaml` is the source of truth — one entry per image.
+2. The **Mirror images to GHCR** workflow runs on every push to `mirrors.yaml` and on a weekly schedule.
+3. For images with `tag: latest`, the workflow inspects the `org.opencontainers.image.version` label and also pushes the image with its resolved semantic version tag.
+4. All resolved tags are written to `mirrors.lock.yaml` (auto-committed).
+5. Helm values files in the infra repo should always reference the **resolved semver tag**, never `latest`.
+
+## Image naming
+
+All images land at:
 
 ```
-ghcr.io/ic3w0rld/<image-name>:<tag>
+ghcr.io/ic3w0rld/<name>:<tag>
 ```
 
-## Repository Layout
+Where `<name>` is the `name:` field in `mirrors.yaml`.
 
-```
-images/
-  <image-name>/
-    Dockerfile
-    README.md        # optional: build args, usage notes
-.github/
-  workflows/
-    build-push-sign.yaml   # CI: build → push → sign
-```
+## Adding a new image
 
-## Adding a New Image
+1. Add an entry to `mirrors.yaml`:
+   ```yaml
+   - name: my-image
+     source: quay.io/example/my-image
+     tag: v1.2.3
+   ```
+2. Push — the workflow mirrors it automatically.
 
-1. Create `images/<name>/Dockerfile`
-2. Push to `main` — CI builds, tags with `latest` + git SHA, pushes to GHCR, and signs
+For `latest`-tagged images, also add `resolve_latest: true` so the semver tag is resolved and stored in `mirrors.lock.yaml`.
 
-## Verifying a Signed Image
+## Updating Helm values (one-time migration)
+
+After the first mirror run, apply GHCR references to all Helm values files:
 
 ```bash
-cosign verify \
-  --certificate-identity "https://github.com/Ic3W0rld/infra-images/.github/workflows/build-push-sign.yaml@refs/heads/main" \
-  --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-  ghcr.io/ic3w0rld/<image-name>:<tag>
+# From the infra-images repo root
+./scripts/update-helm-values.sh ~/git
 ```
 
-## Pulling Images
+Review the diff and commit.
+
+## Triggering a manual run
 
 ```bash
-# Public images — no auth required
-docker pull ghcr.io/ic3w0rld/<image-name>:latest
+# Mirror everything
+gh workflow run mirror.yaml --repo Ic3W0rld/infra-images
+
+# Mirror only images matching a substring
+gh workflow run mirror.yaml --repo Ic3W0rld/infra-images \
+  -f name_filter=postgres
+```
+
+## Verifying an image
+
+```bash
+skopeo inspect docker://ghcr.io/ic3w0rld/<name>:<tag>
 ```
