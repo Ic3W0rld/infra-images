@@ -26,19 +26,24 @@ OS="linux"
 NAME_FILTER="${1:-}"
 
 # --------------------------------------------------------------------------- #
-# Auth check
+# Auth — always (re)login when GITHUB_TOKEN is present; fail fast otherwise
+# Required PAT scopes: write:packages  (classic PAT)
+#                   OR Packages: Read & Write  (fine-grained PAT)
 # --------------------------------------------------------------------------- #
-if ! skopeo inspect --override-arch "$ARCH" \
-    "docker://${GHCR}/${OWNER}/argocd:latest" &>/dev/null 2>&1; then
-  if [[ -z "${GITHUB_TOKEN:-}" ]]; then
-    echo "Not logged in to GHCR. Run:"
-    echo "  export GITHUB_TOKEN=<your-PAT>"
-    echo "  echo \"\$GITHUB_TOKEN\" | skopeo login ghcr.io -u Ic3W0rld --password-stdin"
-    exit 1
-  fi
-  echo "Logging in to GHCR..."
-  echo "$GITHUB_TOKEN" | skopeo login "$GHCR" -u "$OWNER" --password-stdin
+if [[ -z "${GITHUB_TOKEN:-}" ]]; then
+  echo "ERROR: GITHUB_TOKEN is not set."
+  echo ""
+  echo "Create a classic PAT at https://github.com/settings/tokens with scope:"
+  echo "  write:packages"
+  echo ""
+  echo "Then run:"
+  echo "  export GITHUB_TOKEN=<your-PAT>"
+  echo "  ./scripts/mirror-local.sh"
+  exit 1
 fi
+
+echo "Logging in to GHCR..."
+echo "$GITHUB_TOKEN" | skopeo login "$GHCR" -u "$OWNER" --password-stdin
 
 # --------------------------------------------------------------------------- #
 # Mirror loop
