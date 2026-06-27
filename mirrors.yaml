@@ -1,198 +1,22 @@
-# mirrors.yaml — source of truth for all container images mirrored to GHCR.
-#
-# Fields:
-#   name         short slug used as the GHCR image name: ghcr.io/ic3w0rld/<name>
-#   source       upstream image reference (registry/repo:tag)
-#   tag          upstream tag to mirror; may be "latest" or a RELEASE date
-#   resolve_latest  true → also inspect the image for its semver label and push
-#                   a second tag; the resolved tag is written to mirrors.lock.yaml
-#
-# Convention: in Helm values files always reference the resolved semver tag, never "latest".
-
+# mirrors.yaml — regenerated from the LIVE cluster on 2026-06-27.
+# Source of truth = images actually running in prod. name -> ghcr.io/ic3w0rld/<name>:<tag>.
+# resolve_latest: inspect the image's org.opencontainers.image.version label and also push that tag.
 images:
-
-  # ── ArgoCD ────────────────────────────────────────────────────────────────
-
-  - name: argocd
-    source: quay.io/argoproj/argocd
-    tag: v2.14.5
-
-  - name: argocd-extension-installer
-    source: quay.io/argoprojlabs/argocd-extension-installer
-    tag: v0.0.8
-
-  # ── Dex ───────────────────────────────────────────────────────────────────
-
-  - name: dex
-    source: ghcr.io/dexidp/dex
-    tag: v2.42.0
-
-  # ── Cert-manager (v1.17.1) ────────────────────────────────────────────────
-
-  - name: cert-manager-controller
-    source: quay.io/jetstack/cert-manager-controller
-    tag: v1.17.1
-
-  - name: cert-manager-webhook
-    source: quay.io/jetstack/cert-manager-webhook
-    tag: v1.17.1
-
-  - name: cert-manager-cainjector
-    source: quay.io/jetstack/cert-manager-cainjector
-    tag: v1.17.1
-
-  - name: cert-manager-acmesolver
-    source: quay.io/jetstack/cert-manager-acmesolver
-    tag: v1.17.1
-
-  - name: cert-manager-startupapicheck
-    source: quay.io/jetstack/cert-manager-startupapicheck
-    tag: v1.17.1
-
-  # ── Cilium (1.17.1) ───────────────────────────────────────────────────────
-
-  - name: cilium
-    source: quay.io/cilium/cilium
-    tag: v1.17.1
-
-  - name: cilium-operator-generic
-    source: quay.io/cilium/operator-generic
-    tag: v1.17.1
-
-  - name: cilium-hubble-relay
-    source: quay.io/cilium/hubble-relay
-    tag: v1.17.1
-
-  - name: cilium-hubble-ui
-    source: quay.io/cilium/hubble-ui
-    tag: v1.17.1
-
-  - name: cilium-hubble-ui-backend
-    source: quay.io/cilium/hubble-ui-backend
-    tag: v1.17.1
-
-  # ── Fluent Bit (4.0.3) ────────────────────────────────────────────────────
-
-  - name: fluent-bit
-    source: cr.fluentbit.io/fluent/fluent-bit
-    tag: "4.0.3"
-
-  - name: configmap-reload
-    source: ghcr.io/jimmidyson/configmap-reload
-    tag: v0.14.0
-
-  # ── kube-prometheus-stack (operator v0.83.0) ──────────────────────────────
-
-  - name: prometheus-operator
-    source: quay.io/prometheus-operator/prometheus-operator
-    tag: v0.83.0
-
-  - name: prometheus-config-reloader
-    source: quay.io/prometheus-operator/prometheus-config-reloader
-    tag: v0.83.0
-
-  - name: prometheus-operator-admission-webhook
-    source: quay.io/prometheus-operator/admission-webhook
-    tag: v0.83.0
-
-  - name: prometheus
-    source: quay.io/prometheus/prometheus
-    tag: v3.4.1
 
   - name: alertmanager
     source: quay.io/prometheus/alertmanager
-    tag: v0.28.1
+    tag: v0.32.2
 
-  - name: thanos
-    source: quay.io/thanos/thanos
-    tag: v0.38.0
+  - name: alpine
+    source: alpine
+    tag: 3.20
 
-  - name: kube-webhook-certgen
-    source: registry.k8s.io/ingress-nginx/kube-webhook-certgen
-    tag: v1.5.4
+  - name: argocd
+    source: quay.io/argoproj/argocd
+    tag: v3.4.3
 
-  # ── Grafana (12.0.2) ──────────────────────────────────────────────────────
-
-  - name: grafana
-    source: docker.io/grafana/grafana
-    tag: "12.0.2"
-
-  - name: grafana-image-renderer
-    source: docker.io/grafana/grafana-image-renderer
-    tag: latest
-    resolve_latest: true
-
-  - name: k8s-sidecar
-    source: quay.io/kiwigrid/k8s-sidecar
-    tag: "1.30.0"
-
-  - name: curl
-    source: docker.io/curlimages/curl
-    tag: "8.9.1"
-
-  # ── Prometheus Node Exporter (1.9.1) ──────────────────────────────────────
-
-  - name: prometheus-node-exporter
-    source: quay.io/prometheus/node-exporter
-    tag: v1.9.1
-
-  - name: kube-rbac-proxy
-    source: quay.io/brancz/kube-rbac-proxy
-    tag: v0.19.1
-
-  # ── MetalLB (v0.14.9) ─────────────────────────────────────────────────────
-
-  - name: metallb-controller
-    source: quay.io/metallb/controller
-    tag: v0.14.9
-
-  - name: metallb-speaker
-    source: quay.io/metallb/speaker
-    tag: v0.14.9
-
-  - name: frrouting-frr
-    source: quay.io/frrouting/frr
-    tag: "9.1.0"
-
-  - name: kubebuilder-kube-rbac-proxy
-    source: gcr.io/kubebuilder/kube-rbac-proxy
-    tag: v0.12.0
-
-  # ── Metrics-server (0.7.2) ────────────────────────────────────────────────
-
-  - name: metrics-server
-    source: registry.k8s.io/metrics-server/metrics-server
-    tag: v0.7.2
-
-  - name: addon-resizer
-    source: registry.k8s.io/autoscaling/addon-resizer
-    tag: "1.8.21"
-
-  # ── MinIO ─────────────────────────────────────────────────────────────────
-  # MinIO RELEASE tags are deterministic; no resolution needed.
-
-  - name: minio
-    source: quay.io/minio/minio
-    tag: RELEASE.2024-12-18T13-15-44Z
-
-  - name: minio-mc
-    source: quay.io/minio/mc
-    tag: RELEASE.2024-11-21T17-21-54Z
-
-  # ── OpenTelemetry Operator (0.126.0) ──────────────────────────────────────
-
-  - name: opentelemetry-operator
-    source: ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator
-    tag: v0.126.0
-
-  - name: opentelemetry-collector-k8s
-    source: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-k8s
-    tag: "0.126.0"
-
-  # ── PostgreSQL / Bitnami ──────────────────────────────────────────────────
-
-  - name: bitnami-postgresql
-    source: registry-1.docker.io/bitnami/postgresql
+  - name: bitnami-os-shell
+    source: registry-1.docker.io/bitnami/os-shell
     tag: latest
     resolve_latest: true
 
@@ -201,102 +25,199 @@ images:
     tag: latest
     resolve_latest: true
 
-  - name: bitnami-os-shell
-    source: registry-1.docker.io/bitnami/os-shell
+  - name: bitnami-postgresql
+    source: registry-1.docker.io/bitnami/postgresql
     tag: latest
     resolve_latest: true
-
-  # ── Redis / Bitnami ───────────────────────────────────────────────────────
 
   - name: bitnami-redis
     source: registry-1.docker.io/bitnami/redis
     tag: latest
     resolve_latest: true
 
-  - name: bitnami-redis-exporter
-    source: registry-1.docker.io/bitnami/redis-exporter
+  - name: busybox
+    source: busybox
+    tag: 1.35
+
+  - name: busybox
+    source: docker.io/library/busybox
+    tag: 1.38.0
+
+  - name: cert-manager-cainjector
+    source: quay.io/jetstack/cert-manager-cainjector
+    tag: v1.20.2
+
+  - name: cert-manager-controller
+    source: quay.io/jetstack/cert-manager-controller
+    tag: v1.20.2
+
+  - name: cert-manager-webhook
+    source: quay.io/jetstack/cert-manager-webhook
+    tag: v1.20.2
+
+  - name: cilium
+    source: quay.io/cilium/cilium
+    tag: v1.19.4
+
+  - name: cilium-envoy
+    source: quay.io/cilium/cilium-envoy
+    tag: v1.36.6-1778235340-b87d1e32f522b33bd51701c6476d199326f01496
+
+  - name: curl
+    source: docker.io/curlimages/curl
+    tag: 8.20.0
+
+  - name: external-dns
+    source: registry.k8s.io/external-dns/external-dns
+    tag: v0.15.0
+
+  - name: external-secrets
+    source: ghcr.io/external-secrets/external-secrets
+    tag: v2.6.0
+
+  - name: fluent-bit
+    source: cr.fluentbit.io/fluent/fluent-bit
+    tag: 5.0.7
+
+  - name: grafana
+    source: docker.io/grafana/grafana
+    tag: 13.0.1-security-01
+
+  - name: hubble-relay
+    source: quay.io/cilium/hubble-relay
+    tag: v1.19.4
+
+  - name: hubble-ui
+    source: quay.io/cilium/hubble-ui
+    tag: v0.13.5
+
+  - name: hubble-ui-backend
+    source: quay.io/cilium/hubble-ui-backend
+    tag: v0.13.5
+
+  - name: k8s
+    source: docker.io/alpine/k8s
+    tag: 1.36.0
+
+  - name: k8s-sidecar
+    source: docker.io/kiwigrid/k8s-sidecar
+    tag: 2.5.0
+
+  - name: k8s-sidecar
+    source: quay.io/kiwigrid/k8s-sidecar
+    tag: 2.7.3
+
+  - name: kube-state-metrics
+    source: registry.k8s.io/kube-state-metrics/kube-state-metrics
+    tag: v2.19.0
+
+  - name: local-path-provisioner
+    source: docker.io/rancher/local-path-provisioner
+    tag: v0.0.36
+
+  - name: loki
+    source: docker.io/grafana/loki
+    tag: 3.6.7
+
+  - name: metallb-controller
+    source: quay.io/metallb/controller
+    tag: v0.16.1
+
+  - name: metallb-speaker
+    source: quay.io/metallb/speaker
+    tag: v0.16.1
+
+  - name: minio
+    source: quay.io/minio/minio
+    tag: RELEASE.2024-12-18T13-15-44Z
+
+  - name: minio-mc
+    source: minio/mc
     tag: latest
     resolve_latest: true
 
-  - name: bitnami-redis-sentinel
-    source: registry-1.docker.io/bitnami/redis-sentinel
+  - name: mirrored-coredns-coredns
+    source: rancher/mirrored-coredns-coredns
+    tag: 1.12.1
+
+  - name: mirrored-metrics-server
+    source: rancher/mirrored-metrics-server
+    tag: v0.7.2
+
+  - name: node-exporter
+    source: quay.io/prometheus/node-exporter
+    tag: v1.11.1-distroless
+
+  - name: oauth2-proxy
+    source: quay.io/oauth2-proxy/oauth2-proxy
+    tag: v7.15.3
+
+  - name: opentelemetry-collector-contrib
+    source: otel/opentelemetry-collector-contrib
+    tag: 0.152.1
+
+  - name: opentelemetry-collector-k8s
+    source: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-k8s
+    tag: 0.152.1
+
+  - name: opentelemetry-operator
+    source: ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator
+    tag: 0.152.0
+
+  - name: operator-generic
+    source: quay.io/cilium/operator-generic
+    tag: v1.19.4
+
+  - name: prometheus
+    source: quay.io/prometheus/prometheus
+    tag: v3.12.0-distroless
+
+  - name: prometheus-config-reloader
+    source: quay.io/prometheus-operator/prometheus-config-reloader
+    tag: v0.91.0
+
+  - name: prometheus-operator
+    source: quay.io/prometheus-operator/prometheus-operator
+    tag: v0.91.0
+
+  - name: pushgateway
+    source: prom/pushgateway
+    tag: v1.11.1
+
+  - name: redis
+    source: public.ecr.aws/docker/library/redis
+    tag: 7.4.2-alpine
+
+  - name: telemetrygen
+    source: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen
     tag: latest
     resolve_latest: true
 
-  - name: bitnami-kubectl
-    source: registry-1.docker.io/bitnami/kubectl
-    tag: latest
-    resolve_latest: true
-
-  # ── Traefik (v3.3.4) ──────────────────────────────────────────────────────
+  - name: tempo
+    source: grafana/tempo
+    tag: 2.7.2
 
   - name: traefik
     source: docker.io/traefik
     tag: v3.3.4
 
-  # ── HashiCorp Vault (1.21.2) ──────────────────────────────────────────────
+  - name: traefik
+    source: docker.io/traefik
+    tag: v3.7.1
 
   - name: vault
-    source: docker.io/hashicorp/vault
-    tag: "1.21.2"
+    source: hashicorp/vault
+    tag: 1.21.2
 
-  # ── Zitadel (v2.67.2) ─────────────────────────────────────────────────────
+  - name: wait4x
+    source: docker.io/wait4x/wait4x
+    tag: 3.6
 
   - name: zitadel
     source: ghcr.io/zitadel/zitadel
-    tag: v2.67.2
+    tag: v4.14.0
 
-  # ── Sealed Secrets (0.29.0) ───────────────────────────────────────────────
+  - name: zitadel-login
+    source: ghcr.io/zitadel/zitadel-login
+    tag: v4.14.0
 
-  - name: sealed-secrets-controller
-    source: registry-1.docker.io/bitnami/sealed-secrets-controller
-    tag: 0.29.0-debian-12-r1
-
-  # ── External Secrets Operator (v0.15.1) ───────────────────────────────────
-
-  - name: external-secrets
-    source: oci.external-secrets.io/external-secrets/external-secrets
-    tag: v0.15.1
-
-  # ── Loki (3.5.0) ──────────────────────────────────────────────────────────
-
-  - name: grafana-loki
-    source: docker.io/grafana/loki
-    tag: "3.5.0"
-
-  - name: grafana-loki-canary
-    source: docker.io/grafana/loki-canary
-    tag: "3.5.0"
-
-  - name: nginx-unprivileged
-    source: docker.io/nginxinc/nginx-unprivileged
-    tag: 1.28-alpine
-
-  - name: memcached
-    source: docker.io/memcached
-    tag: 1.6.38-alpine
-
-  - name: memcached-exporter
-    source: docker.io/prom/memcached-exporter
-    tag: v0.15.2
-
-  # ── Shared base images ────────────────────────────────────────────────────
-
-  - name: alpine
-    source: docker.io/alpine
-    tag: "3.20"
-
-  - name: busybox
-    source: docker.io/busybox
-    tag: latest
-    resolve_latest: true
-
-  # ── ArgoCD internal deps ──────────────────────────────────────────────────
-
-  - name: redis-alpine
-    source: public.ecr.aws/docker/library/redis
-    tag: 7.4.2-alpine
-
-  - name: redis-exporter
-    source: public.ecr.aws/bitnami/redis-exporter
-    tag: "1.67.0"
