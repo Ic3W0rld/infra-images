@@ -36,9 +36,14 @@ jobs:
           curl -sSL "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64" \
             -o /usr/local/bin/yq && chmod +x /usr/local/bin/yq
 
+      # GHCR_PAT (classic PAT, write:packages) is REQUIRED for the existing
+      # ghcr.io/ic3w0rld/* packages: they were created by workstation pushes
+      # under the user account, so the repo-scoped GITHUB_TOKEN gets 403 on
+      # them (verified run 28703274176: 0 mirrored / 53 errors, all 403).
+      # GITHUB_TOKEN remains only as a fallback for a fresh namespace.
       - name: Log in to GHCR
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" \
+          echo "${{ secrets.GHCR_PAT || secrets.GITHUB_TOKEN }}" \
             | skopeo login "${{ env.GHCR }}" \
                 -u "${{ github.actor }}" \
                 --password-stdin
@@ -144,8 +149,12 @@ jobs:
 
           echo "Mirrored: $count  Errors: $errors"
 
+          # A mirror with errors is a FAILED mirror: the whole point is that
+          # every chart-referenced image exists in GHCR. Going red here also
+          # kills the false-green this run had before (53 errors, green run).
           if [[ $errors -gt 0 ]]; then
-            echo "::warning::$errors image(s) failed to mirror"
+            echo "::error::$errors image(s) failed to mirror"
+            exit 1
           fi
 
       - name: Commit updated lock file
