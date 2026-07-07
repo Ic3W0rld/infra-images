@@ -1,0 +1,35 @@
+name: PR CI
+# Merge gate for every pull request into main. infra-images previously had only
+# the push/schedule `mirror.yaml` workflow, so PRs ran no checks. This lints the
+# two things a PR here can break: the mirror config (YAML) and the bash scripts.
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: shellcheck (scripts)
+        # shellcheck is pre-installed on ubuntu-latest. --severity=warning gates
+        # real bugs; style/info notes (SC1091 external .env, SC2015 idioms) don't
+        # block on the existing scripts.
+        run: shellcheck --severity=warning scripts/*.sh
+
+      - name: yamllint (mirror config + workflows)
+        # -d relaxed catches syntax errors + duplicate keys; line-length stays a
+        # non-blocking warning (yamllint exits 0 without --strict).
+        run: |
+          pipx install yamllint
+          yamllint -d relaxed mirrors.yaml mirrors.lock.yaml .github/workflows
