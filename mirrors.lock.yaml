@@ -25,7 +25,7 @@ images:
     source: registry-1.docker.io/bitnami/postgres-exporter
     upstream_tag: latest
     ghcr: ghcr.io/ic3w0rld/bitnami-postgres-exporter
-    resolved_tag: 0.20.0
+    resolved_tag: 0.20.1
   - name: bitnami-postgresql
     source: registry-1.docker.io/bitnami/postgresql
     upstream_tag: latest
