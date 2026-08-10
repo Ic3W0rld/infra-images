@@ -35,7 +35,7 @@ images:
     source: registry-1.docker.io/bitnami/redis
     upstream_tag: latest
     ghcr: ghcr.io/ic3w0rld/bitnami-redis
-    resolved_tag: 8.8.1
+    resolved_tag: 8.10.0
   - name: busybox
     source: busybox
     upstream_tag: 1.35
