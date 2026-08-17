@@ -30,7 +30,7 @@ images:
     source: registry-1.docker.io/bitnami/postgresql
     upstream_tag: latest
     ghcr: ghcr.io/ic3w0rld/bitnami-postgresql
-    resolved_tag: 18.4.0
+    resolved_tag: 18.6.0
   - name: bitnami-redis
     source: registry-1.docker.io/bitnami/redis
     upstream_tag: latest
